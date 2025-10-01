@@ -4,6 +4,14 @@ from flask_cors import CORS
 from pydantic import ValidationError
 from models import SurveySubmission, StoredSurveyRecord
 from storage import append_json_line
+import haslib
+
+def hash_value(value: str) -> str:
+    return hashlib.sha256(value.encode()).hexdigest()
+
+def generate_submission_id(email_hash: str) -> str:
+    now = datetime.now().strftime("%Y%m%d%H")
+    return hash_value(email_hash + now)
 
 app = Flask(__name__)
 # Allow cross-origin requests so the static HTML can POST from localhost or file://
@@ -28,6 +36,17 @@ def submit_survey():
         submission = SurveySubmission(**payload)
     except ValidationError as ve:
         return jsonify({"error": "validation_error", "detail": ve.errors()}), 422
+
+    submission submission_dict = submission.dict()
+
+    submission_dict["email"] = hash_value(submission_dict["email"])
+    submission_dict["age"] = hash_value(str(submission_dict["age"]))
+
+    if submission_dict.get("submission_id"):
+        submission_id = submission_dict["submission_id"]  
+    else:
+        submission_id = generate_submission_id(submission_dict["email"])  
+    submission_dict["submission_id"] = submission_id
 
     record = StoredSurveyRecord(
         **submission.dict(),
