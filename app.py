@@ -4,7 +4,7 @@ from flask_cors import CORS
 from pydantic import ValidationError
 from models import SurveySubmission, StoredSurveyRecord
 from storage import append_json_line
-import haslib
+import hashlib
 
 def hash_value(value: str) -> str:
     return hashlib.sha256(value.encode()).hexdigest()
@@ -37,7 +37,7 @@ def submit_survey():
     except ValidationError as ve:
         return jsonify({"error": "validation_error", "detail": ve.errors()}), 422
 
-    submission submission_dict = submission.dict()
+    submission_dict = submission.dict()
 
     submission_dict["email"] = hash_value(submission_dict["email"])
     submission_dict["age"] = hash_value(str(submission_dict["age"]))
