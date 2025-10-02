@@ -7,7 +7,7 @@ import hashlib
 
 app = Flask(__name__)
 
-class SurveySubmission(Basemodel):
+class SurveySubmission(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     email: EmailStr
     age: int = Field(..., ge=13, le=120)
