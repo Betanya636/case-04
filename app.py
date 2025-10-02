@@ -27,7 +27,7 @@ def submit_survey():
     try:
         submission = SurveySubmission(**payload)
     except ValidationError as ve:
-        return jsonify({"error": "validation_error", "detail": ve.errors()}), 422
+        return jsonify({"error": "validation_error", "details": ve.errors()}), 422
 
     if not getattr(submission, "submission_id", None):
         submission.submission_id = hashlib.sha256(

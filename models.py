@@ -12,7 +12,7 @@ class SurveySubmission(BaseModel):
     user_agent: Optional[str] = None
     submission_id: Optional[str] = None 
 
-class StoredSurveyRecor(BaseModel):
+class StoredSurveyRecord(BaseModel):
      name: str
      email: str
      age: str
