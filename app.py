@@ -12,8 +12,8 @@ class SurveySubmission(BaseModel):
     email: EmailStr
     age: int = Field(..., ge=13, le=120)
     consent: bool = True
-    rating: int = Field(..., ge=1, le=5)
-    comments: Optional[str] = Field(None, max_length=1000)
+    rating: Optional[int] = None
+    feedback: Optional[str] = Field(None, max_length=1000)
     source: str = "other"
     user_agent: Optional[str] = None
     submission_id: Optional[str] = None
@@ -31,13 +31,13 @@ def submit_survey():
 
     if not getattr(submission, "submission_id", None):
         submission.submission_id = hashlib.sha256(
-            (submission.email + datatime.utcnow().strftime("%Y%m%d%H")).encode()
+            (submission.email + datetime.utcnow().strftime("%Y%m%d%H")).encode()
         ).hexdigest()
     submission.email = hashlib.sha256(submission.email.encode()).hexdigest()
     submission.age = hashlib.sha256(str(submission.age).encode()).hexdigest()
 
     record = submission.dict()
-    record["recieved_at"] = datetime.utcnow().isoformat()
+    record["received_at"] = datetime.utcnow().isoformat()
     record["ip"] = request.remote_addr
     record["user_agent"] = request.headers.get("User-Agent", None)
     
